@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planner
+  labels:
+    app: planner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: planner
+  template:
+    metadata:
+      labels:
+        app: planner
+    spec:
+      containers:
+      - name: planner-container
+        image: planner:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 5000
+        envFrom:
+          - secretRef:
+              name: planner-secrets 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: planner-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: planner
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
