@@ -118,8 +118,8 @@ kubectl get pods
 #to see service and note hte ports
 kubectl get svc
 
-kubectl logs -f recommender-6c779d96d-gfpf9
-kubectl delete pod -l app=recommender
+kubectl logs -f planner-6c779d96d-gfpf9
+kubectl delete pod -l app=planner
 kubectl get pods -w
 
 
@@ -127,19 +127,50 @@ kubectl get pods -w
 ################################################################################
 Sequence after making chnages to the code
 eval $(minikube docker-env)
-docker build --no-cache -t recommender:latest .
-kubectl delete pod -l app=recommender
+docker build --no-cache -t planner:latest .
+kubectl delete pod -l app=planner
 kubectl get pods  #wait for it to be in running state
 
 kubectl get pods
 
-kubectl logs -l app=recommender -f
+kubectl logs -l app=planner -f
 
 # keep running this forever
-kubectl port-forward svc/recommender-service 5000:80 --address 0.0.0.0  
+kubectl port-forward svc/planner-service 5000:80 --address 0.0.0.0  
 
-POD_NAME=$(kubectl get pods -l app=recommender -o jsonpath='{.items[0].metadata.name}')
+POD_NAME=$(kubectl get pods -l app=planner -o jsonpath='{.items[0].metadata.name}')
 kubectl exec -it $POD_NAME -- cat /app/backend/backend.py | head -20
+
+
+#http://104.197.2.29:5000/
+
+
+#If ag=fter chnages there is no chnages
+kubectl logs -l app=planner -f              #Keep this running and try to submit the form. Do you see any requests coming in?
+docker build -t planner:latest .      
+minikube image load planner:latest         # if this stucks for build >>docker build --no-cache -t planner:latest .
+# Delete the deployment
+kubectl delete deployment planner
+
+# Recreate it
+kubectl apply -f k8s.yaml
+
+# Wait for it to be ready
+kubectl wait --for=condition=ready pod -l app=planner --timeout=60s
+kubectl port-forward svc/planner-service 5000:80 --address 0.0.0.0
+
+
+#if not working then update the code maybe previously the code did not get updated
+# Point to minikube's Docker
+eval $(minikube docker-env)
+# Force complete rebuild
+docker build --no-cache -t planner:latest .
+# Switch back
+eval $(minikube docker-env -u)
+kubectl delete deployment planner
+kubectl apply -f k8s.yaml
+kubectl wait --for=condition=ready pod -l app=planner --timeout=60s
+kubectl port-forward svc/planner-service 5000:80 --address 0.0.0.0
 ################################################################################
 
 
