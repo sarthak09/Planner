@@ -152,12 +152,12 @@ docker build -t jenkins-dind .
 
 Run the Jenkins container with the following command:
 
-```bash
-docker run -d --name jenkins-dind \
-  --privileged \
+```bash  #To create jenkins named container
+docker run -d --name jenkins \
   -p 8080:8080 -p 50000:50000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v jenkins_home:/var/jenkins_home \
+  --group-add $(stat -c %g /var/run/docker.sock) \
   jenkins-dind
 ```
 
@@ -176,25 +176,28 @@ docker ps
 To retrieve Jenkins logs and get the initial admin password:
 
 ```bash
-docker logs jenkins-dind
+docker logs jenkins
 ```
 
 You should see a password in the output. Copy that password.
 
-### 7. Find WSL IP Address
 
-Run the following command to get the IP address of your WSL environment:
+Run the following command to ginstall Docker in jenkins
 
 ```bash
-ip addr show eth0 | grep inet
+docker exec -u root -it jenkins bash -lc "apt-get update && apt-get install -y docker-cli && rm -rf /var/lib/apt/lists/*"
 ```
+or
+
+Verify
+docker exec -it jenkins bash -lc "docker version && docker ps"
 
 ### 8. Access Jenkins
 
 Now, access Jenkins on your browser using the following URL (replace `172.23.129.123` with the actual WSL IP address you retrieved):
 
 ```
-http://172.23.129.123:8080
+http://localhost:8080
 ```
 
 ### 9. Install Python and Set Up Jenkins
@@ -202,7 +205,7 @@ http://172.23.129.123:8080
 Return to the terminal and run the following commands to install Python inside the Jenkins container:
 
 ```bash
-docker exec -u root -it jenkins-dind bash
+docker exec -u root -it jenkins bash
 apt update -y
 apt install -y python3
 python3 --version
@@ -217,7 +220,7 @@ exit
 Restart the Jenkins container to apply changes:
 
 ```bash
-docker restart jenkins-dind
+docker restart jenkins
 ```
 
 ### 11. Sign in to Jenkins
