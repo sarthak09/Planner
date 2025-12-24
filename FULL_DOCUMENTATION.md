@@ -145,7 +145,7 @@ Follow the steps below to set up Jenkins inside a Docker container and configure
 Build the Docker image for Jenkins:
 
 ```bash
-docker build -t jenkins-dind .
+docker build -t jenkins .
 ```
 
 ### 4. Run Jenkins Container
@@ -315,11 +315,12 @@ Follow these steps to integrate **SonarQube** with Jenkins for code quality anal
 2. Run the following commands in a new WSL terminal to configure the system:
 
 ```bash
-sysctl -w vm.max_map_count=524288
-sysctl -w fs.file-max=131072
+sudo sysctl -w vm.max_map_count=524288
+sudo sysctl -w fs.file-max=131072
 ulimit -n 131072
 ulimit -u 8192
 ```
+
 
 3. Run the SonarQube container with the appropriate settings. Make sure to change the container name to `sonarqube-dind` and remove the dollar sign (`$`) from the command. You will find the command in the **Demo** section of DockerHub.
 
