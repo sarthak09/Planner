@@ -413,7 +413,7 @@ docker network create dind-network
 2. Connect both containers to the new network:
 
 ```bash
-docker network connect dind-network jenkins-dind
+docker network connect dind-network jenkins
 docker network connect dind-network sonarqube-dind
 ```
 
@@ -452,7 +452,7 @@ Follow these steps to set up AWS integration with Jenkins for building and pushi
 3. Restart **jenkins-dind** after the plugins installation:
 
 ```bash
-docker restart jenkins-dind
+docker restart jenkins
 ```
 
 ---
@@ -485,7 +485,7 @@ docker restart jenkins-dind
 1. Open a new terminal and run the following commands inside your **jenkins-dind** container:
 
 ```bash
-docker exec -u root -it jenkins-dind bash
+docker exec -u root -it jenkins bash
 ```
 
 2. Update the package list and install required tools:
